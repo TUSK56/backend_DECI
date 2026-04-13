@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Deci.Api.Extensions;
 using Deci.Application.DTOs;
 using Deci.Application.Interfaces;
@@ -131,6 +132,26 @@ public class UsersController(IAppDbContext db, IWebHostEnvironment env, IPasswor
         if (user == null) return NotFound();
         if (!string.IsNullOrWhiteSpace(req.FullName)) user.FullName = req.FullName.Trim();
         if (req.Phone != null) user.Phone = string.IsNullOrWhiteSpace(req.Phone) ? null : req.Phone.Trim();
+        if (!string.IsNullOrWhiteSpace(req.Email))
+        {
+            var newEmail = req.Email.Trim().ToLowerInvariant();
+            if (newEmail != user.Email.Trim().ToLowerInvariant())
+            {
+                try
+                {
+                    _ = new MailAddress(newEmail);
+                }
+                catch (FormatException)
+                {
+                    return BadRequest("Invalid email format");
+                }
+
+                if (await db.Users.AnyAsync(u => u.Id != user.Id && u.Email.ToLower() == newEmail))
+                    return Conflict("That email is already in use");
+                user.Email = newEmail;
+            }
+        }
+
         await db.SaveChangesAsync();
         return Ok(AuthController.MapUser(user, Request));
     }

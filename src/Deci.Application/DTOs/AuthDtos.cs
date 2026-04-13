@@ -21,7 +21,7 @@ public record CreateUserRequest(string Email, string Password, string FullName, 
 
 public record UpdateUserRequest(string? Email, string? FullName, string? Phone, string? Password, string? Role, bool? IsActive);
 
-public record UpdateProfileRequest(string? FullName, string? Phone);
+public record UpdateProfileRequest(string? FullName, string? Phone, string? Email);
 
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 
