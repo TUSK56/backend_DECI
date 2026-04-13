@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+
+
+  <PropertyGroup>
+
+    <TargetFramework>net8.0</TargetFramework>
+
+    <Nullable>enable</Nullable>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <RootNamespace>Deci.Api</RootNamespace>
+
+    <!-- Framework-dependent publish for MonsterASP: IIS runs `dotnet Deci.Api.dll` (see web.config). -->
+
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+
+    <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
+
+  </PropertyGroup>
+
+
+
+  <ItemGroup>
+
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+
+      <PrivateAssets>all</PrivateAssets>
+
+    </PackageReference>
+
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\Deci.Application\Deci.Application.csproj" />
+
+    <ProjectReference Include="..\Deci.Infrastructure\Deci.Infrastructure.csproj" />
+
+    <ProjectReference Include="..\Deci.Domain\Deci.Domain.csproj" />
+
+  </ItemGroup>
+
+
+
+  <!-- Dev-only: launchSettings must not ship (applicationUrl / dev ports) -->
+
+  <ItemGroup>
+
+    <Content Remove="Properties\launchSettings.json" />
+
+    <None Update="Properties\launchSettings.json" CopyToPublishDirectory="Never" />
+
+  </ItemGroup>
+
+
+
+  <!-- IIS stdout logs require this folder to exist; ANCM does not create it -->
+
+  <ItemGroup>
+
+    <None Include="logs\.gitkeep" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="appsettings.Production.local.json.example" CopyToPublishDirectory="PreserveNewest" />
+
+  </ItemGroup>
+
+
+
+</Project>
+

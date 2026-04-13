@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=db47681.databaseasp.net;Database=db47681;User Id=db47681;Password=PASTE_PASSWORD_HERE;Encrypt=False;MultipleActiveResultSets=True;TrustServerCertificate=True"
+  }
+}
