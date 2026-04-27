@@ -126,9 +126,28 @@ public class SessionsController(IAppDbContext db, IWebHostEnvironment env) : Con
         var s = await db.SessionLogs.Include(x => x.Coordinator).Include(x => x.Files).FirstOrDefaultAsync(x => x.Id == id);
         if (s == null) return NotFound();
         if (body.Status is not ("approved" or "rejected")) return BadRequest();
-        s.Status = body.Status;
-        await db.SaveChangesAsync();
-        return Ok(Map(s));
+
+        var dto = Map(s);
+
+        if (body.Status == "rejected")
+        {
+            db.SessionLogs.Remove(s);
+            await db.SaveChangesAsync();
+
+            var uploadRoot = Path.Combine(env.WebRootPath, "uploads", "sessions", id.ToString());
+            if (Directory.Exists(uploadRoot))
+            {
+                Directory.Delete(uploadRoot, true);
+            }
+        }
+        else
+        {
+            s.Status = body.Status;
+            await db.SaveChangesAsync();
+            dto = Map(s);
+        }
+
+        return Ok(dto);
     }
 
     private SessionDto Map(SessionLog s) =>

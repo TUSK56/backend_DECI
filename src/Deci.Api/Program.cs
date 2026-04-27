@@ -143,6 +143,25 @@ try
         try
         {
             await db.Database.MigrateAsync();
+            
+            // Remove existing rejected sessions
+            var rejectedSessions = await db.SessionLogs.Where(s => s.Status == "rejected").ToListAsync();
+            if (rejectedSessions.Any())
+            {
+                db.SessionLogs.RemoveRange(rejectedSessions);
+                await db.SaveChangesAsync();
+                
+                // Also clean up their files if possible
+                foreach (var s in rejectedSessions)
+                {
+                    var uploadRoot = Path.Combine(app.Environment.WebRootPath, "uploads", "sessions", s.Id.ToString());
+                    if (Directory.Exists(uploadRoot))
+                    {
+                        try { Directory.Delete(uploadRoot, true); } catch { /* ignore */ }
+                    }
+                }
+            }
+
             await DbSeeder.SeedAsync(db, hasher);
         }
         catch (Exception ex)
